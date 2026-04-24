@@ -1,3 +1,4 @@
+from enum import unique
 from django.db import models
 
 # Create your models here.
@@ -36,3 +37,48 @@ class Good(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PaymentStatus(models.TextChoices):
+    PENDING = "pending", "Ожидает оплаты"
+    PAID = "paid", "Оплачено"
+    CANCELED = "canceled", "Отменено"
+
+
+class Payment(models.Model):
+    good = models.ForeignKey(
+        "Good",
+        on_delete=models.CASCADE,
+        related_name="payments",
+        verbose_name="Товар"
+    )
+
+    session_id = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name="ID сессии Stripe"
+    )
+
+    payment_intent = models.CharField(
+        max_length=20,
+        choices=PaymentStatus.choices,
+        default=PaymentStatus.PENDING,
+        verbose_name="Статус оплаты"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Создано"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Обновлено"
+    )
+
+    class Meta:
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"
+
+    def __str__(self):
+        return f"Платеж №{self.session_id}"
