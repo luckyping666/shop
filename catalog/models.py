@@ -60,6 +60,13 @@ class Payment(models.Model):
     )
 
     payment_intent = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Payment Intent"
+    )
+
+    status = models.CharField(
         max_length=20,
         choices=PaymentStatus.choices,
         default=PaymentStatus.PENDING,

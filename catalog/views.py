@@ -1,7 +1,8 @@
 import stripe
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
-from .models import Good
+from .models import Good, Payment, PaymentStatus
 
 
 # Create your views here.
@@ -20,4 +21,34 @@ class GoodDetailView(DetailView):
 
 def buy_item(request, item_id):
     good = get_object_or_404(Good, id=item_id)
-    session = stripe.checkout.Session.create()
+    session = stripe.checkout.Session.create(
+        mode="payment",
+        
+        line_items=[
+            {
+                "price_data": {
+                    "currency": good.currency,
+                    "unit_amount": good.price,
+                    "product_data": {
+                        "name": good.name,
+                        "description": good.desc
+                    }
+                },
+                "quantity": 1
+            }
+        ],
+
+        success_url=request.build_absolute_uri("/success/"),
+        cancel_url=request.build_absolute_uri("/cancel/"),
+    )
+
+    payment = Payment(
+        good=good,
+        session_id=session.id,
+        payment_intent=session.payment_intent,
+        status=PaymentStatus.PENDING
+    )
+
+    payment.save()
+
+    return JsonResponse({"session_id": session.id})
