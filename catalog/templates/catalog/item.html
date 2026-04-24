@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.name }}{% endblock %}
+
+{% block content %}
+    {% include "catalog/components/item_card.html" %}
+{% endblock %}
