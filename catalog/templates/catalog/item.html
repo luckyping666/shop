@@ -3,5 +3,18 @@
 {% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
-    {% include "catalog/components/item_card.html" %}
+    {% include "catalog/components/item_card.html" with item=item %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+    document.getElementById("buy-button")?.addEventListener("click", function () {
+        fetch("{% url 'catalog:buy_item' item.id %}")
+            .then(response => response.json())
+            .then(data => stripe.redirectToCheckout({ sessionId: data.session_id }));
+    });
+</script>
 {% endblock %}
