@@ -12,5 +12,5 @@ class CatalogView(ListView):
 class GoodDetailView(DetailView):
     model = Good
     template_name = "catalog/item.html"
-    context_object_name = "good"
+    context_object_name = "item"
     pk_url_kwarg = "item_id"

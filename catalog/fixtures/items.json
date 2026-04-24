@@ -1,0 +1,32 @@
+[
+  {
+    "model": "catalog.good",
+    "pk": 1,
+    "fields": {
+      "name": "iPhone 15",
+      "desc": "Современный смартфон с мощным процессором и отличной камерой.",
+      "price": 99900,
+      "currency": "rub"
+    }
+  },
+  {
+    "model": "catalog.good",
+    "pk": 2,
+    "fields": {
+      "name": "PlayStation 5",
+      "desc": "Игровая консоль нового поколения.",
+      "price": 59900,
+      "currency": "rub"
+    }
+  },
+  {
+    "model": "catalog.good",
+    "pk": 3,
+    "fields": {
+      "name": "MacBook Air M2",
+      "desc": "Лёгкий и мощный ноутбук для работы и творчества.",
+      "price": 129900,
+      "currency": "rub"
+    }
+  }
+]
