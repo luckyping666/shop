@@ -1,7 +1,7 @@
 from os import name
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import CatalogView, GoodDetailView, buy_item
+from .views import CatalogView, GoodDetailView, buy_item, webhook_view
 
 app_name = 'catalog'
 
@@ -13,4 +13,6 @@ urlpatterns = [
 
     path("success/", TemplateView.as_view(template_name="catalog/success.html"), name="success"),
     path("cancel/", TemplateView.as_view(template_name="catalog/cancel.html"), name="cancel"),
+
+    path("webhook/", webhook_view, name="stripe_webhook"),
 ]

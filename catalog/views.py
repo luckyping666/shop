@@ -1,9 +1,10 @@
 import stripe
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from .models import Good, Payment, PaymentStatus
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -59,3 +60,39 @@ def buy_item(request, item_id):
     payment.save()
 
     return JsonResponse({"session_id": session.id})
+
+
+@csrf_exempt
+def webhook_view(request):
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except stripe.error.SignatureVerificationError:
+        return HttpResponse(status=400)
+    except Exception:
+        return HttpResponse(status=400)
+
+    # Обработка успешной оплаты
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+
+        session_id = session["id"]
+        payment_intent = session.get("payment_intent")
+
+        Payment
+        try:
+            payment = Payment.objects.get(session_id=session_id)  # ty:ignore[unresolved-attribute]
+            payment.status = PaymentStatus.PAID
+            payment.payment_intent = payment_intent
+            payment.save()
+        
+        except Payment.DoesNotExist:  # ty:ignore[unresolved-attribute]
+            pass
+
+    return HttpResponse(status=200)
+
